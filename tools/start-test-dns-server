@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require_relative '../init'
+
+require 'dns/resolve_host/controls'
+
+require 'rubydns'
+
+port = EventSource::EventStore::HTTP::Controls::Session::ResolvDNS::Port.example
+
+interfaces = [
+  [:udp, "127.0.0.1", port],
+  [:tcp, "127.0.0.1", port]
+]
+
+module Map
+  include EventSource::EventStore::HTTP::Controls::Settings
+
+  def self.get
+    {
+      NonCluster::Available::Hostname.example => [NonCluster::Available::IPAddress.example],
+      NonCluster::Unavailable::Hostname.example => [NonCluster::Unavailable::IPAddress.example],
+      Cluster::Available::Hostname.example => Cluster::Available::IPAddress::List.example,
+      Cluster::Unavailable::Hostname.example => Cluster::Unavailable::IPAddress::List.example
+    }
+  end
+end
+
+RubyDNS::run_server :listen => interfaces do
+  map = Map.get
+
+  map.each do |hostname, ip_address_list|
+    pattern = %r{\A#{Regexp.escape hostname}\z}
+
+    match pattern, Resolv::DNS::Resource::IN::A do |transaction|
+      ip_address_list.each do |ip_address|
+        transaction.respond! ip_address
+      end
+    end
+  end
+end
