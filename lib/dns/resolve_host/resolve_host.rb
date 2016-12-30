@@ -6,6 +6,8 @@ module DNS
 
     attr_accessor :nameserver
 
+    singleton_class.send :alias_method, :build, :new
+
     def self.call(hostname, &block)
       instance = new
       instance.()
