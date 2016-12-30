@@ -6,10 +6,10 @@ context "Substitute" do
   context "No IP addresses are specified for given hostname" do
     substitute = SubstAttr::Substitute.build DNS::ResolveHost
 
-    ip_addresses = substitute.(hostname)
-
-    test "Empty list of addresses is returned" do
-      assert ip_addresses == []
+    test "Resolution error is raised" do
+      assert proc { substitute.(hostname) } do
+        raises_error? DNS::ResolveHost::ResolutionError
+      end
     end
   end
 
@@ -31,10 +31,10 @@ context "Substitute" do
     context "Other hostname is queried" do
       other_hostname = Controls::Hostname.example 'other-hostname'
 
-      ip_addresses = substitute.(other_hostname)
-
-      test "Empty list of addresses is returned" do
-        assert ip_addresses == []
+      test "Resolution error is raised" do
+        assert proc { substitute.(other_hostname) } do
+          raises_error? DNS::ResolveHost::ResolutionError
+        end
       end
     end
   end
@@ -57,10 +57,10 @@ context "Substitute" do
     context "Other hostname is queried" do
       other_hostname = Controls::Hostname.example 'other-hostname'
 
-      ip_addresses = substitute.(other_hostname)
-
-      test "Empty list of addresses is returned" do
-        assert ip_addresses == []
+      test "Resolution error is raised" do
+        assert proc { substitute.(other_hostname) } do
+          raises_error? DNS::ResolveHost::ResolutionError
+        end
       end
     end
   end

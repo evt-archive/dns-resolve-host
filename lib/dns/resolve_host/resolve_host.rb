@@ -30,24 +30,14 @@ module DNS
         addresses.map! &:to_s
 
         if addresses.empty?
-          logger.warn { "Could not resolve host (#{LogAttributes.get self, hostname})" }
-        else
-          logger.info { "Resolved host (#{LogAttributes.get self, hostname}, Address#{'es' unless addresses.count == 1}: #{addresses * ', '})" }
+          error_message = "Could not resolve host (#{LogAttributes.get self, hostname})"
+          logger.error { error_message }
+          raise ResolutionError, error_message
         end
+
+        logger.info { "Resolved host (#{LogAttributes.get self, hostname}, Address#{'es' unless addresses.count == 1}: #{addresses * ', '})" }
 
         return addresses
-      end
-    end
-
-    module LogAttributes
-      def self.get(resolve_host, hostname)
-        if resolve_host.nameserver
-          nameserver = resolve_host.nameserver.to_a * ':'
-        else
-          nameserver = "(system)"
-        end
-
-        "Hostname: #{hostname}, Nameserver: #{nameserver}"
       end
     end
   end

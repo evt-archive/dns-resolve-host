@@ -7,7 +7,11 @@ module DNS
 
       class ResolveHost
         def call(hostname)
-          map[hostname]
+          if map.key? hostname
+            map[hostname]
+          else
+            raise ResolutionError
+          end
         end
 
         def set(hostname, ip_addresses)
@@ -19,7 +23,7 @@ module DNS
         end
 
         def map
-          @map ||= Hash.new { [] }
+          @map ||= {}
         end
       end
     end

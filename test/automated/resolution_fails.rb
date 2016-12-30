@@ -7,10 +7,10 @@ context "IP Address Cannot Be Resolved From Hostname" do
   Controls::Server.start do |nameserver|
     resolve_host.nameserver = nameserver
 
-    ip_addresses = resolve_host.(hostname)
-
-    test "Empty list of addresses is returned" do
-      assert ip_addresses = []
+    test "Address resolution error is raised" do
+      assert proc { resolve_host.(hostname) } do
+        raises_error? DNS::ResolveHost::ResolutionError
+      end
     end
   end
 end
