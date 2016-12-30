@@ -6,6 +6,11 @@ module DNS
 
     attr_accessor :nameserver
 
+    def self.call(hostname, &block)
+      instance = new
+      instance.()
+    end
+
     def call(hostname, &block)
       if nameserver
         options = { :nameserver_port => [nameserver.to_a] }
