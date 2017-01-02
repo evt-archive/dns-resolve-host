@@ -3,12 +3,12 @@ require_relative '../automated_init'
 context "Static Resolver, Local Settings File" do
   hostname = Controls::Hostname.example
 
-  context "Project-local file is found (default path)" do
+  context "Project-local file is not specified" do
     static_resolver = DNS::ResolveHost::StaticResolver.get
 
-    test "Static resolver uses specified file" do
+    test "Static resolver uses default project-local hosts file" do
       assert static_resolver do
-        file? 'settings/hosts.dns_resolve_host'
+        file? 'settings/hosts'
       end
     end
 
@@ -18,6 +18,16 @@ context "Static Resolver, Local Settings File" do
       ip_addresses.map! &:to_s
 
       assert ip_addresses == Controls::IPAddress.list
+    end
+  end
+
+  context "Project-local file is specified" do
+    static_resolver = DNS::ResolveHost::StaticResolver.get 'settings/hosts.example'
+
+    test "Static resolver uses specified hosts file" do
+      assert static_resolver do
+        file? 'settings/hosts.example'
+      end
     end
   end
 

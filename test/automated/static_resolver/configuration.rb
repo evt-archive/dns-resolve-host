@@ -13,7 +13,7 @@ context "Configuring Static Resolver" do
   end
 
   context "Local path is specified" do
-    local_path = 'settings/hosts.dns_resolve_host'
+    local_path = 'settings/hosts.example'
 
     static_resolver = DNS::ResolveHost::StaticResolver.configure receiver, local_path
 

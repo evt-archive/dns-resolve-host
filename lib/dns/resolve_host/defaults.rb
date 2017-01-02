@@ -2,7 +2,7 @@ module DNS
   class ResolveHost
     module Defaults
       def self.local_hosts_file
-        'settings/hosts.dns_resolve_host'
+        'settings/hosts'
       end
 
       def self.port
