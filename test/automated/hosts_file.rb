@@ -1,18 +1,15 @@
 require_relative './automated_init'
 
 context "Hostname Resolves Entry In Hosts File" do
-  hostname = Controls::HostsFile.hostname
+  hostname = Controls::Hostname.example
 
-  resolve_host = DNS::ResolveHost.new
-
-  Controls::Server.start do |host, port|
-    resolve_host.nameserver_address = host
-    resolve_host.nameserver_port = port
+  Controls::Server.start do |address, port|
+    resolve_host = DNS::ResolveHost.build address: address, port: port
 
     ip_addresses = resolve_host.(hostname)
 
-    test "IP address is returned" do
-      assert ip_addresses.include?(Controls::HostsFile.ip_address)
+    test "IP addresses are returned" do
+      assert ip_addresses == Controls::IPAddress.list
     end
   end
 end

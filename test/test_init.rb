@@ -11,3 +11,5 @@ require 'test_bench'; TestBench.activate
 require 'pp'
 
 Controls = DNS::ResolveHost::Controls
+
+Resolv::Hosts.send :const_set, :Assertions, DNS::ResolveHost::StaticResolver::Assertions

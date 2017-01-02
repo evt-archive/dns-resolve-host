@@ -4,14 +4,23 @@ module DNS
 
     configure :resolve_host
 
-    setting :nameserver_address
-    setting :nameserver_port
+    attr_accessor :nameserver_address
+    attr_writer :nameserver_port
 
-    def self.build(settings=nil)
-      settings ||= Settings.instance
+    dependency :hosts_resolver, Resolv::Hosts
+
+    def self.build(address: nil, port: nil)
+      if address.nil? and not port.nil?
+        raise ArgumentError, "Cannot specify port without address"
+      end
 
       instance = new
-      settings.set instance
+
+      StaticResolver.configure instance, attr_name: :hosts_resolver
+
+      instance.nameserver_address = address if address
+      instance.nameserver_port = port if port
+
       instance
     end
 
@@ -23,10 +32,10 @@ module DNS
     def call(hostname, &block)
       logger.trace { "Resolving host (#{LogAttributes.get self, hostname})" }
 
-      Resolv::DNS.open resolv_options do |dns|
-        resolver = Resolv.new [Resolv::Hosts.new, dns]
+      Resolv::DNS.open dns_resolver_options do |dns_resolver|
+        resolver = Resolv.new [hosts_resolver, dns_resolver]
 
-        block.(dns) if block
+        block.(dns_resolver) if block
 
         addresses = resolver.getaddresses hostname
 
@@ -44,12 +53,18 @@ module DNS
       end
     end
 
-    def resolv_options
+    def dns_resolver_options
       if nameserver_address
-        { :nameserver_port => [[nameserver_address, nameserver_port]] }
+        { :nameserver_port => [nameserver] }
       else
+        # Resolv::DNS.new expects the options argument to be *nil* when the
+        # system nameservers are meant to be used [Nathan Ladd, Mon 2 Jan 2017]
         nil
       end
+    end
+
+    def nameserver
+      [nameserver_address, nameserver_port]
     end
 
     def nameserver_port
