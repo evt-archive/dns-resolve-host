@@ -1,8 +1,9 @@
 require_relative './automated_init'
 
-context "Hostname Resolves To Single IP Address" do
+context "Hostname Resolves Entry In Hosts File" do
+  hostname = Controls::HostsFile.hostname
+
   resolve_host = DNS::ResolveHost.new
-  hostname = Controls::Hostname.example
 
   Controls::Server.start do |host, port|
     resolve_host.nameserver_address = host
@@ -11,7 +12,7 @@ context "Hostname Resolves To Single IP Address" do
     ip_addresses = resolve_host.(hostname)
 
     test "IP address is returned" do
-      assert ip_addresses == [Controls::IPAddress.example]
+      assert ip_addresses.include?(Controls::HostsFile.ip_address)
     end
   end
 end

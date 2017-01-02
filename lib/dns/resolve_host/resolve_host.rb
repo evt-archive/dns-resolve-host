@@ -4,28 +4,31 @@ module DNS
 
     configure :resolve_host
 
-    attr_accessor :nameserver
+    setting :nameserver_address
+    setting :nameserver_port
 
-    singleton_class.send :alias_method, :build, :new
+    def self.build(settings=nil)
+      settings ||= Settings.instance
+
+      instance = new
+      settings.set instance
+      instance
+    end
 
     def self.call(hostname, &block)
       instance = new
-      instance.()
+      instance.(hostname, &block)
     end
 
     def call(hostname, &block)
-      if nameserver
-        options = { :nameserver_port => [nameserver.to_a] }
-      else
-        options = nil
-      end
-
       logger.trace { "Resolving host (#{LogAttributes.get self, hostname})" }
 
-      Resolv::DNS.open options do |dns|
+      Resolv::DNS.open resolv_options do |dns|
+        resolver = Resolv.new [Resolv::Hosts.new, dns]
+
         block.(dns) if block
 
-        addresses = dns.getaddresses hostname
+        addresses = resolver.getaddresses hostname
 
         addresses.map! &:to_s
 
@@ -39,6 +42,18 @@ module DNS
 
         return addresses
       end
+    end
+
+    def resolv_options
+      if nameserver_address
+        { :nameserver_port => [[nameserver_address, nameserver_port]] }
+      else
+        nil
+      end
+    end
+
+    def nameserver_port
+      @nameserver_port ||= Defaults.port
     end
   end
 end

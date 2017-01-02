@@ -21,9 +21,7 @@ module DNS
             end
           end
 
-          nameserver = Nameserver.new bind_address, port
-
-          block.(nameserver)
+          block.(bind_address, port)
 
           # The rubydns library does not properly unbind its server socket when
           # the actor terminates. See the following github issue:

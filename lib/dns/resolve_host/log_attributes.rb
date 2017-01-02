@@ -2,8 +2,8 @@ module DNS
   class ResolveHost
     module LogAttributes
       def self.get(resolve_host, hostname)
-        if resolve_host.nameserver
-          nameserver = resolve_host.nameserver.to_a * ':'
+        if resolve_host.nameserver_address
+          nameserver = "#{resolve_host.nameserver_address}:#{resolve_host.nameserver_port}"
         else
           nameserver = "(system)"
         end

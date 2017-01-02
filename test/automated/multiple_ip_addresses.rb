@@ -6,8 +6,9 @@ context "Hostname Resolves To Multiple Addresses" do
 
   control_ip_addresses = Controls::IPAddress.list
 
-  Controls::Server.start ip_addresses: control_ip_addresses do |nameserver|
-    resolve_host.nameserver = nameserver
+  Controls::Server.start ip_addresses: control_ip_addresses do |host, port|
+    resolve_host.nameserver_address = host
+    resolve_host.nameserver_port = port
 
     ip_addresses = resolve_host.(hostname)
 
