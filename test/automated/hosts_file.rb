@@ -4,7 +4,11 @@ context "Hostname Resolves Entry In Hosts File" do
   hostname = Controls::Hostname.example
 
   Controls::Server.start do |address, port|
-    resolve_host = DNS::ResolveHost.build address: address, port: port
+    resolve_host = DNS::ResolveHost.build(
+      address: address,
+      port: port,
+      hosts_file: 'settings/hosts.example'
+    )
 
     ip_addresses = resolve_host.(hostname)
 

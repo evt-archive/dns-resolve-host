@@ -9,14 +9,14 @@ module DNS
 
     dependency :hosts_resolver, Resolv::Hosts
 
-    def self.build(address: nil, port: nil)
+    def self.build(address: nil, port: nil, hosts_file: nil)
       if address.nil? and not port.nil?
         raise ArgumentError, "Cannot specify port without address"
       end
 
       instance = new
 
-      StaticResolver.configure instance, attr_name: :hosts_resolver
+      StaticResolver.configure instance, hosts_file, attr_name: :hosts_resolver
 
       instance.nameserver_address = address if address
       instance.nameserver_port = port if port

@@ -1,28 +1,26 @@
 module DNS
   class ResolveHost
     module StaticResolver
-      def self.get(local_path=nil)
-        logger.trace { "Constructing static resolver (LocalPath: #{local_path.inspect})" }
+      def self.get(hosts_file=nil)
+        logger.trace { "Constructing static resolver (HostsFile: #{hosts_file.inspect})" }
 
-        local_path ||= Defaults.local_hosts_file
-
-        if File.exist? local_path
-          hosts_file = local_path
-        else
+        if hosts_file.nil?
           hosts_file = Resolv::Hosts::DefaultFileName
+        elsif !File.exist?(hosts_file)
+          File.open(hosts_file) { }
         end
 
         static_resolver = Resolv::Hosts.new hosts_file
 
-        logger.trace { "Static resolver constructed (LocalPath: #{local_path.inspect}, HostsFile: #{hosts_file})" }
+        logger.trace { "Static resolver constructed (HostsFile: #{hosts_file})" }
 
         static_resolver
       end
 
-      def self.configure(receiver, local_path=nil, attr_name: nil)
+      def self.configure(receiver, hosts_file=nil, attr_name: nil)
         attr_name ||= :static_resolver
 
-        instance = get local_path
+        instance = get hosts_file
         receiver.public_send "#{attr_name}=", instance
         instance
       end
