@@ -3,12 +3,24 @@ require_relative './automated_init'
 context "Substitute" do
   hostname = Controls::Hostname.example
 
-  context "No IP addresses are specified for given hostname" do
+  context "No IP addresses are specified" do
     substitute = SubstAttr::Substitute.build DNS::ResolveHost
 
-    test "Resolution error is raised" do
-      assert proc { substitute.(hostname) } do
-        raises_error? DNS::ResolveHost::ResolutionError
+    context "Hostname is supplied" do
+      test "Resolution error is raised" do
+        assert proc { substitute.(hostname) } do
+          raises_error? DNS::ResolveHost::ResolutionError
+        end
+      end
+    end
+
+    context "IPv4 address is specified" do
+      control_ip_address = Controls::IPAddress.example
+
+      ip_address = substitute.(control_ip_address)
+
+      test "Address is returned" do
+        assert ip_address == control_ip_address
       end
     end
   end

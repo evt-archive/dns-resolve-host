@@ -9,9 +9,18 @@ module DNS
         def call(hostname)
           if map.key? hostname
             map[hostname]
+          elsif ip_address? hostname
+            hostname
           else
             raise ResolutionError
           end
+        end
+
+        def ip_address?(string)
+          IPAddr.new string
+          true
+        rescue IPAddr::InvalidAddressError
+          false
         end
 
         def set(hostname, ip_addresses)
