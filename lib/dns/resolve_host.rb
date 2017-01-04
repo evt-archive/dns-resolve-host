@@ -1,3 +1,4 @@
+require 'ipaddr'
 require 'resolv'
 
 require 'configure'; Configure.activate
