@@ -10,7 +10,7 @@ module DNS
           if map.key? hostname
             map[hostname]
           elsif ip_address? hostname
-            hostname
+            [hostname]
           else
             raise ResolutionError
           end

@@ -19,8 +19,8 @@ context "Substitute" do
 
       ip_address = substitute.(control_ip_address)
 
-      test "Address is returned" do
-        assert ip_address == control_ip_address
+      test "Address is returned in array" do
+        assert ip_address == [control_ip_address]
       end
     end
   end
